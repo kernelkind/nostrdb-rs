@@ -1,5 +1,6 @@
 use crate::{bindings, Error, FilterError, Note, Result};
 use std::ffi::CString;
+use std::hash::Hash;
 use std::os::raw::c_char;
 use std::ptr::null_mut;
 use tracing::debug;
@@ -25,6 +26,14 @@ impl Clone for Filter {
             );
         };
         Filter { data: new_filter }
+    }
+}
+
+impl Hash for Filter {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        if let Ok(json_string) = self.json() {
+            json_string.hash(state)
+        }
     }
 }
 
