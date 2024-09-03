@@ -37,6 +37,14 @@ impl Hash for Filter {
     }
 }
 
+impl PartialEq for Filter {
+    fn eq(&self, other: &Self) -> bool {
+        self.json() == other.json()
+    }
+}
+
+impl Eq for Filter {}
+
 impl bindings::ndb_filter {
     fn as_ptr(&self) -> *const bindings::ndb_filter {
         self as *const bindings::ndb_filter
