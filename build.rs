@@ -119,11 +119,6 @@ fn main() {
         println!("cargo:rerun-if-changed={}", file);
     }
 
-    // Link Security framework on macOS
-    if cfg!(target_os = "macos") {
-        println!("cargo:rustc-link-lib=framework=Security");
-    }
-
     //
     // We only need bindgen when we update the bindings.
     // I don't want to complicate the build with it.
