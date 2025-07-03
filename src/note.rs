@@ -535,6 +535,37 @@ impl<'a> NoteBuilder<'a> {
 
         Some(Note::new_owned(note_ptr, size))
     }
+
+    pub fn from_note<F>(note: Note<'_>, skip_tag: Option<F>) -> Self
+    where
+        F: Fn(&crate::Tag<'_>) -> bool,
+    {
+        let mut builder = NoteBuilder::new();
+
+        builder = builder.id(note.id());
+        builder = builder.content(note.content());
+        builder = builder.created_at(note.created_at());
+        builder = builder.kind(note.kind());
+        builder = builder.pubkey(note.pubkey());
+
+        for tag in note.tags() {
+            if let Some(skip) = &skip_tag {
+                if skip(&tag) {
+                    continue;
+                }
+            }
+
+            builder = builder.start_tag();
+            for tag_item in tag {
+                builder = match tag_item.variant() {
+                    crate::NdbStrVariant::Id(id) => builder.tag_id(id),
+                    crate::NdbStrVariant::Str(str) => builder.tag_str(str),
+                };
+            }
+        }
+
+        builder
+    }
 }
 
 #[cfg(test)]
